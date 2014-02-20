@@ -1,0 +1,83 @@
+input {
+  stdin {
+    type => "example"
+  }
+}
+filter {
+
+  grok {
+    patterns_dir => "/usr/local/etc/logstash/patterns/"
+    # %cxd %stm %etm %dur %pro %sip %spt %dip %dpt %spk %sby %dpk %dby %sfl %dfl %ver
+    
+    match => [ "message", "%{INT:cxid} %{CXDATE:start_time} %{CXDATE:end_time} %{INT:dur} %{INT:proto} %{IP:src_ip} %{INT:src_port} %{IP:dst_ip} %{INT:dst_port} %{INT:src_pkts} %{INT:src_bytes} %{INT:dst_pkts} %{INT:dst_bytes} %{INT:src_tcpflags} %{INT:dst_tcpflags} %{INT:family}" ]
+  }
+
+  date {
+    match => [ "start_time", "YYYY-MM-dd HH:mm:ss" ]
+    timezone => "UTC"
+    target => ["start_time"]
+  }
+
+  date {
+    match => [ "end_time", "YYYY-MM-dd HH:mm:ss" ]
+    timezone => "UTC"
+    target => ["end_time"]
+  }
+
+
+  if [family] {
+    translate {
+      field => "family"
+      override => true
+      destination => "family"
+      dictionary => [ "2", "AF_INET",
+                    "10", "AF_INET6" ]
+    }
+  }
+  if [proto] {
+    translate {
+        field => "proto"
+        override => true
+        destination => "proto"
+        dictionary_path => "/usr/local/etc/logstash/dictionaries/ip-proto.yml"
+        fallback => "unknown"
+    }
+  }
+
+  if [src_tcpflags] {
+    translate {
+      field => "src_tcpflags"
+      override => true
+      destination => "src_tcpflags"
+      dictionary_path => "/usr/local/etc/logstash/dictionaries/tcpflags-boolean.yml"
+      fallback => "unknown"
+    }
+  
+    csv {
+     columns => ["src_CWR","src_ECE","src_URG","src_ACK","src_PUSH","src_RST","src_SYN","src_FIN"]
+     source => ["src_tcpflags"]
+     remove_field => ["src_tcpflags"]
+    }
+  }
+
+  if [dst_tcpflags] {
+    translate {
+      field => "dst_tcpflags"
+      override => true
+      destination => "dst_tcpflags"
+      dictionary_path => "/usr/local/etc/logstash/dictionaries/tcpflags-boolean.yml"
+      fallback => "unknown"
+    }
+  
+    csv {
+     columns => ["dst_CWR","dst_ECE","dst_URG","dst_ACK","dst_PUSH","dst_RST","dst_SYN","dst_FIN"]
+     source => ["dst_tcpflags"]
+     remove_field => ["dst_tcpflags"]
+    }
+  }
+} 
+
+output {
+  stdout { codec => rubydebug }
+  redis { host => "logstash-master.myserver.com" data_type => "list" key => "logstash" }
+}
