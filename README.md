@@ -8,7 +8,7 @@ https://github.com/shadowbq/logstash_cxtracker_parser
 
 CXTracker:
 
-https://github.com/wmesser/cxtracker
+https://github.com/gamelinux/cxtracker
 
 
 ------------------------------
