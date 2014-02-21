@@ -1,7 +1,36 @@
-logstash_cxtracker_parser
+logstash cxtracker parser
 =========================
 
-CXTracker format string. 
+
+As a long time user of Passive collected NETFLOW (IPFIX) tools like SANCP and CXTracker I've scraped together a 'bad ass' netflow tool that is now ultra scalable good bye SQL.. (thank god). 
+
+https://github.com/shadowbq/logstash_cxtracker_parser
+
+CXTracker:
+
+https://github.com/wmesser/cxtracker
+
+
+------------------------------
+
+http://www.elasticsearch.org/
+
+An end-to-end search and analytics platform. infinitely versatile.
+
+The Elasticsearch ELK Stack
+
+"By combining the massively popular Elasticsearch, Logstash and Kibana we have created an end-to-end stack that delivers actionable insights in real-time from almost any type of structured and unstructured data source. Built and supported by the engineers behind each of these open source products, the Elasticsearch ELK stack makes searching and analyzing data easier than ever before." - snip.. 
+
+Logstash
+
+Scrub, parse, and enrich.
+like soap for your data.
+
+"Logstash helps you take logs and other time based event data from any system and store it in a single place for additional transformation and processing. Logstash will scrub your logs and parse all data sources into an easy to read JSON format." snip .. 
+
+---------
+
+CXTracker  format string. 
 
 <pre>
 %cxd %stm %etm %dur %pro %sip %spt %dip %dpt %spk %sby %dpk %dby %sfl %dfl %ver
